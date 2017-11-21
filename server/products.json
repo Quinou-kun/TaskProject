@@ -1,0 +1,26 @@
+{
+	"1":{
+		"id": 1,
+		"nom": "Boîtier de pédalier TANGE",
+		"description": "Super léger, le top du boîtier",
+		"prix": 45.56
+	},
+	"2":{
+		"id": 2,
+		"nom": "Pédalier SHIMANO",
+		"description": "46 dents",
+		"prix": 75.45
+	},
+	"3":{
+		"id": 3,
+		"nom": "Tige de selle BLB TRACK",
+		"description": "avec intégration de LED lumineuses",
+		"prix": 110.99
+	},
+	"4":{
+		"id": 4,
+		"nom": "Guidon BLB",
+		"description": "Solide et léger",
+		"prix": 110.99
+	}
+}
