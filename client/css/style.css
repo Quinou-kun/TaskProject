@@ -11,15 +11,20 @@ ul{
 }
 
 #tasks {
-    width: 500px;
+    width: 900px;
 }
 
 .task{
     margin: 10px;
-    background: gainsboro;
+    background: rgba(0,0,0,0.05);
+    border : 1px solid black;
+    border-radius : 5px;
 }
 
 .name{
+    font-weight: bold;
+    background-color : lightskyblue;
+    color : white;
     display: block;
     text-transform: uppercase;
     text-align: center;
