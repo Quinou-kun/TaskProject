@@ -3,7 +3,7 @@ window.TaskManager = (() => {
 
     module.Task = class Task{
 
-        constructor(name = 'untitled', duration = 0, tags = null){
+        constructor(name = 'untitled', duration = 0, tags = 'edit tag'){
             this.name = name ;
             this.duration = duration ;
             this.tags = tags ;
