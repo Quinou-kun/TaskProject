@@ -40,11 +40,10 @@ window.TaskManager = (() => {
                     name.append(editor);
                     in_edit = true ;
                 }
-
-                if (target.is('input') && target.prop('type')=== 'submit'){
-                    task.tags = field.val();
+                if (target.is('input') && target.prop('type')=== 'submit' ){
+                    task.name = field.val();
                     name.empty();
-                    name.text(task.tags);
+                    name.text(task.name);
                     in_edit = false;
                 }
             });
@@ -115,8 +114,25 @@ window.TaskManager = (() => {
 
     module.add_item = () => {
         $('#add').click(function(){
-            TaskManager.tasks.push(new TaskManager.Task());
-            TaskManager.display_tasks('#taskmanager');
+            $('#add').hide();
+            let newTask = $('<div>').prop('id','addtask').append('<h1>New Task :</h1>');
+            let fieldName = $('<input>').prop('type','text');
+            let fieldDuration = $('<input>').prop('type','number');
+            let button = $('<input>').prop('type', 'submit');
+            newTask.append(fieldName,fieldDuration,button);
+            $('body').append(newTask);
+
+            button.click((event) => {
+                event.stopPropagation();
+                event.preventDefault();
+                TaskManager.tasks.push(new TaskManager.Task(fieldName.val(),fieldDuration.val()));
+                $('#addtask').remove();
+                $('#add').show();
+                TaskManager.display_tasks('#taskmanager');
+
+            })
+
+
         })
     };
 
