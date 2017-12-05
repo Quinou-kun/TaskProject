@@ -18,29 +18,38 @@
             <div id="taskmanager"></div>
         </div>
         <center>
-            <button type="button" id="add" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Add task</button>
+            <button type="button" id="add" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modalTask">
+                Add task
+            </button>
         </center> 
 
         <!-- Modal -->
-        <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal" id="modalTask" tabindex="-1" role="dialog" aria-labelledby="modalTaskLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="modalTaskLabel">New task</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
-                </div>
-                <div class="modal-body">
-                    <p>Modal body text goes here.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+                    </div>
+                    <div class="modal-body" id="addtask">
+                        <div class="form-group offset-md-2">
+                            <label for="name">Task name :</label>
+                            <input type="text" id="inputName" class="form-control col-md-8">
+                        </div>
+                        <div class="form-group offset-md-2">
+                            <label for="duration">Task duration :</label>
+                            <input type="number" id="inputDuration" class="form-control col-md-8">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="submit" id="addSubmit" class="btn btn-primary offset-md-2" data-dismiss="modal">
+                    </div>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
 
 </body>

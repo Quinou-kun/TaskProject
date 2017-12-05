@@ -125,33 +125,14 @@ window.TaskManager = (() => {
     };
 
     module.add_item = () => {
-        $('#add').click(function(){
-            $('#add').hide();
-            let newTask = $('<div>').prop('id','addtask').append($('<h1>').addClass('offset-md-4').text('New Task :'));
 
-            let nameLabel = $('<label>').prop('for','name').text('Task name');
-            let fieldName = $('<input>').prop('type','text').addClass('form-control col-md-6');
-            let nameDiv = $('<div>').addClass('form-group offset-md-4').append(nameLabel).append(fieldName);
-
-            let durationLabel = $('<label>').prop('for','duration').text('Task duration');
-            let fieldDuration = $('<input>').prop('type','number').addClass('form-control col-md-6');
-            let durationDiv = $('<div>').addClass('form-group offset-md-4').append(durationLabel).append(fieldDuration);
-
-            let button = $('<input>').prop('type', 'submit').addClass('btn btn-primary offset-md-4');
-
-            newTask.append(nameDiv,durationDiv,button);
-            $('div.modal').append(newTask);
-
-            button.click((event) => {
-                event.stopPropagation();
-                event.preventDefault();
-                TaskManager.tasks.push(new TaskManager.Task(fieldName.val(),fieldDuration.val()));
-                $('#addtask').remove();
-                $('#add').show();
-                TaskManager.display_tasks('#taskmanager');
-
-            })
-
+        $('#addSubmit').click((event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            TaskManager.tasks.push(new TaskManager.Task($('#inputName').val(),$('#inputDuration').val()));
+            $('#modalTask').modal('toggle');
+            TaskManager.display_tasks('#taskmanager');
+            
         })
     };
 

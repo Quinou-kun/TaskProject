@@ -26,15 +26,6 @@ p {
     max-width: 100%;
 }
 
-#addtask {
-    margin: auto;
-    padding: 1rem;
-    background: #c8c8c8;
-    border : 1px solid black;
-    border-radius : 5px;
-    width: 50%;
-}
-
 .task{
     margin: 10px;
     background: rgba(0,0,0,0.05);
