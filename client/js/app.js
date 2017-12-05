@@ -140,7 +140,7 @@ window.TaskManager = (() => {
             let button = $('<input>').prop('type', 'submit').addClass('btn btn-primary offset-md-4');
 
             newTask.append(nameDiv,durationDiv,button);
-            $('div.container').append(newTask);
+            $('div.modal').append(newTask);
 
             button.click((event) => {
                 event.stopPropagation();
@@ -151,7 +151,6 @@ window.TaskManager = (() => {
                 TaskManager.display_tasks('#taskmanager');
 
             })
-
 
         })
     };
