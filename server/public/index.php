@@ -13,7 +13,7 @@ $app->add(function(ServerRequestInterface $request, ResponseInterface $response,
 });
 
 //Chemins des fichiers JSON
-$tasks_path = realpath('..').'/tasks.json';
+$tasks_path = realpath('').'/tasks.json';
 
 //On charge les produits existants
 $tasks = array();
@@ -28,7 +28,7 @@ $app->group('/tasks', function () use($app, $tasks_path, $tasks) {
 
     $app->post('/addtask', function (ServerRequestInterface $request) use($tasks_path) {
 		$data = $request->getParams();
-
+		
         if(!empty($data['name']) && !empty($data['duration'])) {
             $current = array();
 
