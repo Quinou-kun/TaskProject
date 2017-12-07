@@ -136,7 +136,7 @@ window.TaskManager = (() => {
             console.log(newTask);
 
             $.post("http://localhost:89/tasks/addtask", newTask).done((data) => {
-
+                console.log(data);
             });
 
             $('#modalTask').modal('toggle');
@@ -150,9 +150,6 @@ window.TaskManager = (() => {
 
 
 $(() => {
-    TaskManager.tasks.push(new TaskManager.Task('tache 1', 10, 'test'));
-    TaskManager.tasks.push(new TaskManager.Task('tache 2', 20, 'test2'));
-    TaskManager.tasks.push(new TaskManager.Task('tache 3', 15, 'test1'));
     TaskManager.display_tasks('#taskmanager');
     TaskManager.add_item();
 
