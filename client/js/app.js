@@ -129,7 +129,16 @@ window.TaskManager = (() => {
         $('#addSubmit').click((event) => {
             event.stopPropagation();
             event.preventDefault();
-            TaskManager.tasks.push(new TaskManager.Task($('#inputName').val(),$('#inputDuration').val()));
+
+            let newTask = new TaskManager.Task($('#inputName').val(),$('#inputDuration').val());
+            TaskManager.tasks.push(newTask);
+
+            console.log(newTask);
+
+            $.post("http://localhost:89/tasks/addtask", newTask).done((data) => {
+
+            });
+
             $('#modalTask').modal('toggle');
             TaskManager.display_tasks('#taskmanager');
             
@@ -138,9 +147,6 @@ window.TaskManager = (() => {
 
     return module ;
 })();
-
-
-
 
 
 $(() => {

@@ -13,62 +13,103 @@ $app->add(function(ServerRequestInterface $request, ResponseInterface $response,
 });
 
 //Chemins des fichiers JSON
-$products_path = realpath('..').'/products.json';
-$cart_path = realpath('..').'/cart.json';
+$tasks_path = realpath('..').'/tasks.json';
 
 //On charge les produits existants
-$products = array();
-if(file_exists($products_path)){
-	$products = json_decode(file_get_contents($products_path), true);
+$tasks = array();
+if(file_exists($tasks_path)){
+    $tasks = json_decode(file_get_contents($tasks_path));
 }
 
-$app->get('/products', function() use($products){
-	echo json_encode($products);
-});
+$app->group('/tasks', function () use($app, $tasks_path, $tasks) {
+    $app->get('[/]', function () use($tasks) {
+        echo json_encode($tasks);
+    });
 
-$app->group('/cart', function() use($app, $products, $cart_path){
-	$app->post('/{pid}', function(Slim\Http\Request $request, Slim\Http\Response $response) use($products, $cart_path){
-		$pid = $request->getAttribute('pid');
-		if(!empty($pid) && isset($products[$pid])){
-			$current = array();
-			if(file_exists($cart_path)){
-				$current = json_decode(file_get_contents($cart_path), true);
-			}
-			if( ! isset($current[$pid]) ){
-				$current[$pid]['nom'] = $products[$pid]['nom'];
-				$current[$pid]['qte'] = 0;
-				$current[$pid]['prix'] = 0;
-			}
+    $app->post('/addtask', function (ServerRequestInterface $request) use($tasks_path) {
+		$data = $request->getParams();
 
-			$current[$pid]['qte'] += 1;
-			$current[$pid]['prix'] = $current[$pid]['qte'] * $products[$pid]['prix'];
+        if(!empty($data['name']) && !empty($data['duration'])) {
+            $current = array();
 
-			$to_json = json_encode($current);
-			file_put_contents($cart_path, $to_json);
-			echo $to_json;
-		}
-	});
+            if (file_exists($tasks_path)) {
+                $current = json_decode(file_get_contents($tasks_path), true);
+            }
 
-	$app->get('', function() use($cart_path){
-		$cart = json_encode(array());
-		if(file_exists($cart_path)){
-			$cart = file_get_contents($cart_path);
-		}
-		echo $cart;
-	});
+           if (empty($data['tags'])) {
+                $current[sizeof($current) + 1] = ['name' => $data['name'], 'duration' => $data['duration'], 'Tags' => null];
+            } else {
+                $tags = array();
+                $data['tags'] = explode('/', $data['tags']);
 
-	$app->delete('', function() use($cart_path){
-		if(file_exists($cart_path)){
-			file_put_contents($cart_path, '');
-		}
-		echo json_encode(array('success' => 1));
-	});
+                foreach ($data['tags'] as $t) {
+                    $tags[sizeof($tags) + 1] = ['name' => $t];
+                }
 
-	$app->put('/{pid}/buy', function(Slim\Http\Request $request, Slim\Http\Response $response){
-		$pid = $request->getAttribute('pid');
-		sleep(rand(0,5));
-		echo json_encode(array('success' => 1, 'product' => $pid));
-	});
+                $current[sizeof($current) + 1] = ['name' => $data['name'], 'duration' => $data['duration'], 'Tags' => $data['tags']];
+            }
+
+            $to_json = json_encode($current);
+            file_put_contents($tasks_path, $to_json);
+
+            echo $to_json;
+        }
+    });
+
+    $app->post('/{taskid}/addtag', function (ServerRequestInterface $request) use($tasks_path) {
+        $taskId = $request->getAttribute('taskid');
+        $taskTags = $request->getParam('tags');
+
+        $current = array();
+
+        if (file_exists($tasks_path)) {
+            $current = json_decode(file_get_contents($tasks_path), true);
+        }
+
+        if (!empty($taskTags)) {
+            $tagsTasks = explode('/', $taskTags);
+
+            foreach ($tagsTasks as $t) {
+                if (!empty($t)) {
+                    $current[$taskId]['Tags'][sizeof($current[$taskId]['Tags']) + 1] = ['name' => $t];
+                }
+            }
+
+            $to_json = json_encode($current);
+            file_put_contents($tasks_path, $to_json);
+
+            echo $to_json;
+        }
+    });
+
+    $app->delete('/{taskid}', function (ServerRequestInterface $request) use($tasks_path) {
+        $taskId = $request->getAttribute('taskid');
+
+        if (file_exists($tasks_path)) {
+            $current = json_decode(file_get_contents($tasks_path), true);
+            array_splice($current['Tasks'], $taskId - 1, 1);
+
+            $to_json = json_encode($current);
+            file_put_contents($tasks_path, $to_json);
+
+            echo json_encode($current);
+        }
+    });
+
+    $app->delete('/{taskid}/tags/{tagid}', function (ServerRequestInterface $request) use($tasks_path) {
+        $taskId = $request->getAttribute('taskid');
+        $tagId = $request->getAttribute('tagid');
+
+        if (file_exists($tasks_path)) {
+            $current = json_decode(file_get_contents($tasks_path), true);
+            unset($current['Tasks'][$taskId - 1]['Tags'][$tagId - 1]);
+
+            $to_json = json_encode($current);
+            file_put_contents($tasks_path, $to_json);
+
+            echo $to_json;
+        }
+    });
 });
 
 $app->run();
