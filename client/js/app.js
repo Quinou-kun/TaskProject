@@ -10,6 +10,10 @@ window.TaskManager = (() => {
         }
 
         display_item(){
+            $.post("http://localhost:89/tasks/addtask").done((data) => {
+                console.log(data);
+            });
+
             let properties = $('<div>').addClass('row');
             properties.append(this.display_duration());
             properties.append(this.display_category());
@@ -133,10 +137,10 @@ window.TaskManager = (() => {
             let newTask = new TaskManager.Task($('#inputName').val(),$('#inputDuration').val());
             TaskManager.tasks.push(newTask);
 
-            console.log(newTask);
+            //console.log(newTask);
 
             $.post("http://localhost:89/tasks/addtask", newTask).done((data) => {
-                console.log(data);
+                //console.log(data);
             });
 
             $('#modalTask').modal('toggle');
