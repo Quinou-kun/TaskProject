@@ -10,7 +10,9 @@ window.TaskManager = (() => {
         }
 
         display_item(){
-            $.post("http://localhost:89/tasks/addtask").done((data) => {
+
+            // renvoie tout les tasks, à utiliser pour les afficher du json data
+            $.get("http://localhost:89/tasks").done((data) => {
                 console.log(data);
             });
 
@@ -24,6 +26,7 @@ window.TaskManager = (() => {
         }
 
         display_name(){
+
             let name = $('<span>').addClass('col-md-12 name').text(this.name + ' ');
             let editBtn = $('<i>').addClass('fa fa-pencil').prop('aria-hidden','true')
 
