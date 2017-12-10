@@ -1,2 +1,0 @@
-# TaskProject
-JS ToDoList

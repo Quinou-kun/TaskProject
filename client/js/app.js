@@ -12,11 +12,23 @@ window.TaskManager = (() => {
     }
 
     display_item(){
+      let task = this;
       let properties = $('<div>').addClass('row');
       properties.append(this.display_duration());
       properties.append(this.display_category());
+
+      let deleteBtn = $('<i>').addClass('fa fa-trash').prop('aria-hidden','true')
+
+      deleteBtn.click((event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        module.delete_task(task.id);
+      });
+
+
       return $('<li>')
         .addClass('task')
+        .append(deleteBtn)
         .append(this.display_name())
         .append(properties);
     }
@@ -50,7 +62,7 @@ window.TaskManager = (() => {
         if (target.is('input') && target.prop('type')=== 'submit' ){
           task.name = field.val();
           name.empty();
-          name.text(task.tags);
+          name.text(task.name);
           name.append(editBtn);
           in_edit = false;
         }
@@ -77,10 +89,19 @@ window.TaskManager = (() => {
     }
 
     display_category(){
-      let tags = $('<ul>').addClass('col-md-6 text-center category');
+
+      let task = this;
+
       let item = $('<p>').addClass('col-md-6 text-center category');
-      for (let tag of this.tags){
-        tags.append('<li>'+tag+'</li>');
+      let tags = $('<ul>').addClass('col-md-6 text-center category');
+      for (let tag in task.tags){
+        let deleteBtn = $('<i>').addClass('fa fa-trash').prop('aria-hidden','true');
+        deleteBtn.click((event)=>{
+          event.stopPropagation();
+          event.preventDefault();
+          module.delete_tag(task.id, task.tags[tag]);
+        });
+        tags.append('<li>'+task.tags[tag]+'</li>').append(deleteBtn);
       }
       tags.append('</ul>');
       let editBtn = $('<i>').addClass('fa fa-pencil').prop('aria-hidden','true');
@@ -92,7 +113,7 @@ window.TaskManager = (() => {
       let editor = $('<form>').append(field).append(button);
 
       let in_edit = false ;
-      let task = this;
+
 
       item.click((event) => {
         event.stopPropagation();
@@ -119,15 +140,10 @@ window.TaskManager = (() => {
   module.tasks = [];
 
   module.fetchTasks = () => {
-    console.log(module.tasks);
     // renvoie tout les tasks, à utiliser pour les afficher du json data
     $.get("http://localhost:8089/tasks").done((data) => {
       Object.keys(data).forEach(key => {
-        let Array = []
-        $.each(data[key].Tags, function(key, value) {
-          Array.push(value['name']);
-        });
-        let newTask = new TaskManager.Task(data[key].id, data[key].name, data[key].duration, Array);
+        let newTask = new TaskManager.Task(data[key].id, data[key].name, data[key].duration, data[key].Tags);
         TaskManager.tasks.push(newTask);
       });
 
@@ -165,11 +181,56 @@ window.TaskManager = (() => {
     })
   };
 
-  module.add_tag = (taskId, tag) => {
-    TaskManager.tasks[taskId-1].tags.push(tag);
-    $.post("http://localhost:8089/tasks/"+taskId+"/addtag", {tag :tag}).done((data) => {
-
+  module.delete_task = (taskId) => {
+    for(let task of module.tasks){
+      if (task.id === taskId){
+        const index = module.tasks.indexOf(task);
+        module.tasks.splice(index,1);
+      }
+    }
+    $.ajax({
+      url: 'http://localhost:8089/tasks/'+taskId,
+      type: 'DELETE',
+      success: function(result) {
+      }
+    }).done(()=>{
+      TaskManager.display_tasks('#taskmanager');
     });
+  };
+
+  module.delete_tag = (taskId, tag) => {
+
+    for(let task of module.tasks){
+      if (task.id === taskId){
+        for (let i in task.tags){
+          if (task.tags[i]=== tag){
+            delete task.tags[i];
+
+          }
+        }
+
+
+      }
+      $.ajax({
+        url: 'http://localhost:8089/tasks/'+taskId+'/tags/'+tag,
+        type: 'DELETE',
+        success: function(result) {
+        }
+      }).done(()=>{
+        TaskManager.display_tasks('#taskmanager');
+      });
+    }
+  }
+
+  module.add_tag = (taskId, tag) => {
+    for(let task of module.tasks) {
+      if (task.id === taskId) {
+        console.log(task)
+        task.tags[Object.keys(task).length+1] = tag;
+      }
+    }
+    $.post("http://localhost:8089/tasks/"+taskId+"/addtag", {tag :tag}).done((data) => {
+    })
   };
 
   return module ;
