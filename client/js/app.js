@@ -80,13 +80,13 @@ window.TaskManager = (() => {
       let tags = $('<ul>').addClass('col-md-6 text-center category');
       let item = $('<p>').addClass('col-md-6 text-center category');
       for (let tag of this.tags){
-        item.append('<li>'+tag+'</li>');
+        tags.append('<li>'+tag+'</li>');
       }
       tags.append('</ul>');
       let editBtn = $('<i>').addClass('fa fa-pencil').prop('aria-hidden','true');
-
       item.append(editBtn);
       tags.append(item);
+
       let field = $('<input>').prop('type','text');
       let button = $('<input>').prop('type', 'submit');
       let editor = $('<form>').append(field).append(button);
@@ -109,13 +109,10 @@ window.TaskManager = (() => {
         if (target.is('input') && target.prop('type') === 'submit'){
           module.add_tag(task.id, field.val());
           task.tags.push(field.val());
-          item.empty();
-          item.text(task.tags);
-          item.append(editBtn);
-          in_edit = false;
+          TaskManager.display_tasks('#taskmanager');
         }
       });
-      return item ;
+      return tags ;
     }
 
   };
