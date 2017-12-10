@@ -1,6 +1,7 @@
 window.TaskManager = (() => {
     let module = {};
 
+
     module.Task = class Task{
 
         constructor(name = 'Untitled task', duration = 60, tags = 'edit tag'){
@@ -10,12 +11,6 @@ window.TaskManager = (() => {
         }
 
         display_item(){
-
-            // renvoie tout les tasks, à utiliser pour les afficher du json data
-            $.get("http://localhost:89/tasks").done((data) => {
-                console.log(data);
-            });
-
             let properties = $('<div>').addClass('row');
             properties.append(this.display_duration());
             properties.append(this.display_category());
@@ -121,6 +116,17 @@ window.TaskManager = (() => {
 
     module.tasks = [];
 
+    module.fetchTasks = () => {
+      // renvoie tout les tasks, à utiliser pour les afficher du json data
+      $.get("http://localhost:8089/tasks").done((data) => {
+        Object.keys(data).forEach(key => {
+          let newTask = new TaskManager.Task(data[key].name, data[key].duration, data[key].tags);
+          TaskManager.tasks.push(newTask);
+        });
+        TaskManager.display_tasks('#taskmanager');
+      });
+    };
+
     module.display_tasks = (div_id) => {
         $(div_id).empty();
         let container = $("<ul>").prop('id','tasks');
@@ -140,10 +146,9 @@ window.TaskManager = (() => {
             let newTask = new TaskManager.Task($('#inputName').val(),$('#inputDuration').val());
             TaskManager.tasks.push(newTask);
 
-            //console.log(newTask);
 
-            $.post("http://localhost:89/tasks/addtask", newTask).done((data) => {
-                //console.log(data);
+            $.post("http://localhost:8089/tasks/addtask", newTask).done((data) => {
+
             });
 
             $('#modalTask').modal('toggle');
@@ -157,7 +162,7 @@ window.TaskManager = (() => {
 
 
 $(() => {
-    TaskManager.display_tasks('#taskmanager');
+    TaskManager.fetchTasks();
     TaskManager.add_item();
 
 });
