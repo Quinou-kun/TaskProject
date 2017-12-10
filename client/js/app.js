@@ -108,7 +108,6 @@ window.TaskManager = (() => {
 
         if (target.is('input') && target.prop('type') === 'submit'){
           module.add_tag(task.id, field.val());
-          task.tags.push(field.val());
           TaskManager.display_tasks('#taskmanager');
         }
       });
