@@ -14,6 +14,7 @@ $app->add(function(ServerRequestInterface $request, ResponseInterface $response,
 
 //Chemins des fichiers JSON
 $tasks_path = realpath('').'/tasks.json';
+$tags_path = realpath('').'/tags.json';
 
 //On charge les produits existants
 $tasks = array();
@@ -37,7 +38,7 @@ $app->group('/tasks', function () use($app, $tasks_path, $tasks) {
             }
 
            if (empty($data['tags'])) {
-                $current[sizeof($current) + 1] = ['name' => $data['name'], 'duration' => $data['duration'], 'Tags' => null];
+                $current[sizeof($current) + 1] = ['id' => $data['id'], 'name' => $data['name'], 'duration' => $data['duration'], 'Tags' => null];
             } else {
                 $tags = array();
                 $data['tags'] = explode('/', $data['tags']);
@@ -46,7 +47,7 @@ $app->group('/tasks', function () use($app, $tasks_path, $tasks) {
                     $tags[sizeof($tags) + 1] = ['name' => $t];
                 }
 
-                $current[sizeof($current) + 1] = ['name' => $data['name'], 'duration' => $data['duration'], 'Tags' => $data['tags']];
+                $current[sizeof($current) + 1] = ['id' => $data['id'], 'name' => $data['name'], 'duration' => $data['duration'], 'Tags' => $data['tags']];
             }
 
             $to_json = json_encode($current);
@@ -58,8 +59,7 @@ $app->group('/tasks', function () use($app, $tasks_path, $tasks) {
 
     $app->post('/{taskid}/addtag', function (ServerRequestInterface $request) use($tasks_path) {
         $taskId = $request->getAttribute('taskid');
-        $taskTags = $request->getParam('tags');
-
+        $taskTags = $request->getParam('tag');
         $current = array();
 
         if (file_exists($tasks_path)) {
