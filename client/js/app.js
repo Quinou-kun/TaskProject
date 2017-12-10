@@ -1,168 +1,187 @@
 window.TaskManager = (() => {
-    let module = {};
+  let module = {};
 
 
-    module.Task = class Task{
+  module.Task = class Task{
 
-        constructor(name = 'Untitled task', duration = 60, tags = 'edit tag'){
-            this.name = name ;
-            this.duration = duration ;
-            this.tags = tags ;
+    constructor(id = null, name = 'Untitled task', duration = 60, tags = []){
+      this.id = id;
+      this.name = name ;
+      this.duration = duration ;
+      this.tags = tags ;
+    }
+
+    display_item(){
+      let properties = $('<div>').addClass('row');
+      properties.append(this.display_duration());
+      properties.append(this.display_category());
+      return $('<li>')
+        .addClass('task')
+        .append(this.display_name())
+        .append(properties);
+    }
+
+    display_name(){
+
+      let name = $('<span>').addClass('col-md-12 name').text(this.name + ' ');
+      let editBtn = $('<i>').addClass('fa fa-pencil').prop('aria-hidden','true')
+
+      name.append(editBtn);
+
+      let field = $('<input>').prop('type','text');
+      let button = $('<input>').prop('type', 'submit');
+      let editor = $('<form>').append(field).append(button);
+
+      let in_edit = false ;
+
+      let task = this;
+
+      name.click((event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
+        let target = $(event.target);
+
+        if(!in_edit && target.is('i')) {
+          name.empty();
+          name.append(editor);
+          in_edit = true;
         }
-
-        display_item(){
-            let properties = $('<div>').addClass('row');
-            properties.append(this.display_duration());
-            properties.append(this.display_category());
-            return $('<li>')
-                .addClass('task')
-                .append(this.display_name())
-                .append(properties);
+        if (target.is('input') && target.prop('type')=== 'submit' ){
+          task.name = field.val();
+          name.empty();
+          name.text(task.tags);
+          name.append(editBtn);
+          in_edit = false;
         }
-
-        display_name(){
-
-            let name = $('<span>').addClass('col-md-12 name').text(this.name + ' ');
-            let editBtn = $('<i>').addClass('fa fa-pencil').prop('aria-hidden','true')
-
-            name.append(editBtn);
-
-            let field = $('<input>').prop('type','text');
-            let button = $('<input>').prop('type', 'submit');
-            let editor = $('<form>').append(field).append(button);
-
-            let in_edit = false ;
-
-            let task = this;
-
-            name.click((event) => {
-                event.stopPropagation();
-                event.preventDefault();
-
-                let target = $(event.target);
-
-                if(!in_edit && target.is('i')) {
-                    name.empty();
-                    name.append(editor);
-                    in_edit = true;
-                }
-                if (target.is('input') && target.prop('type')=== 'submit' ){
-                    task.name = field.val();
-                    name.empty();
-                    name.text(task.tags);
-                    name.append(editBtn);
-                    in_edit = false;
-                }
-            });
-
-            return name;
-        }
-
-        display_duration(){
-            let item = $('<p>').addClass('col-md-6 text-center duration').text(' duration = ' + this.duration);
-
-            item.prepend(
-                $('<i>').addClass('fa fa-clock-o').prop('aria-hidden','true')
-            );
-            
-            if(this.duration <=10) {
-                item.addClass('short');
-            }
-            else if (this.duration >= 20){
-                item.addClass('long');
-            }
-
-            return item ;
-        }
-
-        display_category(){
-            let item = $('<p>').addClass('col-md-6 text-center category').text(this.tags + ' ');
-            let editBtn = $('<i>').addClass('fa fa-pencil').prop('aria-hidden','true')
-
-            item.append(editBtn);
-
-            let field = $('<input>').prop('type','text');
-            let button = $('<input>').prop('type', 'submit');
-            let editor = $('<form>').append(field).append(button);
-
-            let in_edit = false ;
-
-            let task = this;
-
-            item.click((event) => {
-                event.stopPropagation();
-                event.preventDefault();
-
-                let target = $(event.target);
-
-                if(!in_edit && target.is('i')) {
-                    item.empty();
-                    item.append(editor);
-                    in_edit = true;
-                }
-
-                if (target.is('input') && target.prop('type') === 'submit'){
-                    task.tags = field.val();
-                    item.empty();
-                    item.text(task.tags);
-                    item.append(editBtn);
-                    in_edit = false;
-                }
-            });
-            return item ;
-        }
-
-    };
-
-    module.tasks = [];
-
-    module.fetchTasks = () => {
-      // renvoie tout les tasks, à utiliser pour les afficher du json data
-      $.get("http://localhost:8089/tasks").done((data) => {
-        Object.keys(data).forEach(key => {
-          let newTask = new TaskManager.Task(data[key].name, data[key].duration, data[key].tags);
-          TaskManager.tasks.push(newTask);
-        });
-        TaskManager.display_tasks('#taskmanager');
       });
-    };
 
-    module.display_tasks = (div_id) => {
-        $(div_id).empty();
-        let container = $("<ul>").prop('id','tasks');
-        $(div_id).append(container);
+      return name;
+    }
 
-        for(let task of module.tasks){
-            $(container).append(task.display_item());
+    display_duration(){
+      let item = $('<p>').addClass('col-md-6 text-center duration').text(' duration = ' + this.duration);
+
+      item.prepend(
+        $('<i>').addClass('fa fa-clock-o').prop('aria-hidden','true')
+      );
+
+      if(this.duration <=10) {
+        item.addClass('short');
+      }
+      else if (this.duration >= 20){
+        item.addClass('long');
+      }
+
+      return item ;
+    }
+
+    display_category(){
+      let tags = $('<ul>').addClass('col-md-6 text-center category');
+      let item = $('<p>').addClass('col-md-6 text-center category');
+      for (let tag of this.tags){
+        item.append('<li>'+tag+'</li>');
+      }
+      tags.append('</ul>');
+      let editBtn = $('<i>').addClass('fa fa-pencil').prop('aria-hidden','true');
+
+      item.append(editBtn);
+      tags.append(item);
+      let field = $('<input>').prop('type','text');
+      let button = $('<input>').prop('type', 'submit');
+      let editor = $('<form>').append(field).append(button);
+
+      let in_edit = false ;
+      let task = this;
+
+      item.click((event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
+        let target = $(event.target);
+
+        if(!in_edit && target.is('i')) {
+          item.empty();
+          item.append(editor);
+          in_edit = true;
         }
-    };
 
-    module.add_item = () => {
+        if (target.is('input') && target.prop('type') === 'submit'){
+          module.add_tag(task.id, field.val());
+          task.tags.push(field.val());
+          item.empty();
+          item.text(task.tags);
+          item.append(editBtn);
+          in_edit = false;
+        }
+      });
+      return item ;
+    }
 
-        $('#addSubmit').click((event) => {
-            event.stopPropagation();
-            event.preventDefault();
+  };
 
-            let newTask = new TaskManager.Task($('#inputName').val(),$('#inputDuration').val());
-            TaskManager.tasks.push(newTask);
+  module.tasks = [];
+
+  module.fetchTasks = () => {
+    console.log(module.tasks);
+    // renvoie tout les tasks, à utiliser pour les afficher du json data
+    $.get("http://localhost:8089/tasks").done((data) => {
+      Object.keys(data).forEach(key => {
+        let Array = []
+        $.each(data[key].Tags, function(key, value) {
+          Array.push(value['name']);
+        });
+        let newTask = new TaskManager.Task(data[key].id, data[key].name, data[key].duration, Array);
+        TaskManager.tasks.push(newTask);
+      });
+
+      TaskManager.display_tasks('#taskmanager');
+    });
+  };
+
+  module.display_tasks = (div_id) => {
+    $(div_id).empty();
+    let container = $("<ul>").prop('id','tasks');
+    $(div_id).append(container);
+
+    for(let task of module.tasks){
+      $(container).append(task.display_item());
+    }
+  };
+
+  module.add_item = () => {
+
+    $('#addSubmit').click((event) => {
+      event.stopPropagation();
+      event.preventDefault();
+
+      let newTask = new TaskManager.Task(module.tasks.length+1,$('#inputName').val(),$('#inputDuration').val());
+      TaskManager.tasks.push(newTask);
 
 
-            $.post("http://localhost:8089/tasks/addtask", newTask).done((data) => {
+      $.post("http://localhost:8089/tasks/addtask", newTask).done((data) => {
 
-            });
+      });
 
-            $('#modalTask').modal('toggle');
-            TaskManager.display_tasks('#taskmanager');
-            
-        })
-    };
+      $('#modalTask').modal('toggle');
+      TaskManager.display_tasks('#taskmanager');
 
-    return module ;
+    })
+  };
+
+  module.add_tag = (taskId, tag) => {
+    TaskManager.tasks[taskId-1].tags.push(tag);
+    $.post("http://localhost:8089/tasks/"+taskId+"/addtag", {tag :tag}).done((data) => {
+
+    });
+  };
+
+  return module ;
 })();
 
 
 $(() => {
-    TaskManager.fetchTasks();
-    TaskManager.add_item();
+  TaskManager.fetchTasks();
+  TaskManager.add_item();
 
 });
