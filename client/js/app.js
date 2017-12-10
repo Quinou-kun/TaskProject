@@ -10,6 +10,12 @@ window.TaskManager = (() => {
         }
 
         display_item(){
+
+            // renvoie tout les tasks, à utiliser pour les afficher du json data
+            $.get("http://localhost:89/tasks").done((data) => {
+                console.log(data);
+            });
+
             let properties = $('<div>').addClass('row');
             properties.append(this.display_duration());
             properties.append(this.display_category());
@@ -20,6 +26,7 @@ window.TaskManager = (() => {
         }
 
         display_name(){
+
             let name = $('<span>').addClass('col-md-12 name').text(this.name + ' ');
             let editBtn = $('<i>').addClass('fa fa-pencil').prop('aria-hidden','true')
 
@@ -133,10 +140,10 @@ window.TaskManager = (() => {
             let newTask = new TaskManager.Task($('#inputName').val(),$('#inputDuration').val());
             TaskManager.tasks.push(newTask);
 
-            console.log(newTask);
+            //console.log(newTask);
 
             $.post("http://localhost:89/tasks/addtask", newTask).done((data) => {
-                console.log(data);
+                //console.log(data);
             });
 
             $('#modalTask').modal('toggle');
